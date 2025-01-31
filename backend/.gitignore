@@ -1,0 +1,7 @@
+.env
+credentials/secret.json
+credentials/mtg-card-identifier-447917-90603de43e93.json
+computervision/util/scripts/missed_scans
+computervision/util/scripts/organized_images
+computervision/util/mtg-env
+node_modules
