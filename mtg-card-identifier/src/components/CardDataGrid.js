@@ -1,113 +1,99 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
+import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import { Box } from '@mui/material';
 
-const CardDataGrid = ({ cards }) => {
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+/**
+ * Example: columns to display relevant Scryfall fields:
+ * - Name
+ * - Image
+ * - Mana Cost
+ * - Type Line
+ * - Power / Toughness
+ * - Rarity
+ */
+const columns = [
+  {
+    field: 'name',
+    headerName: 'Card Name',
+    flex: 1.5,
+    minWidth: 160,
+  },
+  {
+    field: 'image',
+    headerName: 'Image',
+    flex: 1,
+    minWidth: 120,
+    renderCell: (params) => {
+      if (!params.value) return null;
+      return (
+        <img
+          src={params.value}
+          alt={params.row.name}
+          style={{ width: 60, borderRadius: 4 }}
+        />
+      );
+    },
+  },
+  {
+    field: 'manaCost',
+    headerName: 'Mana Cost',
+    flex: 1,
+    minWidth: 100,
+  },
+  {
+    field: 'typeLine',
+    headerName: 'Type',
+    flex: 1,
+    minWidth: 140,
+  },
+  {
+    field: 'powerToughness',
+    headerName: 'P/T',
+    flex: 0.7,
+    minWidth: 80,
+    // For rows that have power/toughness, display them as "4/4"
+  },
+  {
+    field: 'rarity',
+    headerName: 'Rarity',
+    flex: 0.7,
+    minWidth: 80,
+  },
+];
 
-  if (!cards || Object.keys(cards).length === 0) {
-    return <Box>No cards available to display.</Box>;
-  }
+/**
+ * Transform Scryfall card objects to DataGrid row objects:
+ */
+function transformCardData(cardData) {
+  return cardData.map((card, index) => {
+    // Some card properties might be absent depending on the set, so use fallback or checks
+    const { name, image_uris, mana_cost, type_line, power, toughness, rarity } = card.cards.data;
+    return {
+      id: index,
+      name: name,
+      image: image_uris?.normal,
+      manaCost: mana_cost,
+      typeLine: type_line,
+      powerToughness: power && toughness ? `${power}/${toughness}` : '',
+      rarity: rarity,
+    }
+  });
+}
 
-  // Transform the cards object into rows for the DataGrid
-  const rows = Object.entries(cards).map(([title, card], index) => ({
-    id: index, // Unique row ID
-    name: card.name || title,
-    manaCost: card.mana_cost || '-',
-    type: card.type_line || '-',
-    rarity: card.rarity || '-',
-    setName: card.set_name || '-',
-    price: card.prices?.usd || '-',
-    imageUrl: card.image_uris?.normal || '', // Image URL
-    scryfallUrl: card.scryfall_uri || '', // Hyperlink to Scryfall
-  }));
-
-  // Define columns for the DataGrid
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'name', headerName: 'Card Name', width: 200 },
-    { field: 'manaCost', headerName: 'Mana Cost', width: 150 },
-    { field: 'type', headerName: 'Type', width: 200 },
-    { field: 'rarity', headerName: 'Rarity', width: 150 },
-    { field: 'setName', headerName: 'Set Name', width: 200 },
-    { field: 'price', headerName: 'Price (USD)', width: 150 },
-  ];
-
-  const handleRowClick = (params) => {
-    setSelectedCard(params.row);
-    setDrawerOpen(true);
-  };
+export default function CardDataGrid({ cardData = [] }) {
+  // Convert Scryfall data to rows for MUI DataGrid
+  const rows = React.useMemo(() => {
+    return transformCardData(cardData);
+  }, [cardData]);
 
   return (
-    <Box sx={{ height: 900, width: '100%' }}>
+    <Box sx={{ height: '100%', width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[10, 20, 30]}
-        onRowClick={handleRowClick}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 25]}
       />
-
-      {/* Drawer for displaying card details */}
-      <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box sx={{ width: 300, p: 2 }}>
-          <Typography variant="h5" gutterBottom>
-            Card Details
-          </Typography>
-          {selectedCard && (
-            <>
-              {selectedCard.imageUrl && (
-                <Box
-                  component="img"
-                  src={selectedCard.imageUrl}
-                  alt={selectedCard.name}
-                  sx={{ width: '100%', mb: 2, borderRadius: 1 }}
-                />
-              )}
-              <Typography>
-                <strong>Name:</strong> {selectedCard.name}
-              </Typography>
-              <Typography>
-                <strong>Mana Cost:</strong> {selectedCard.manaCost}
-              </Typography>
-              <Typography>
-                <strong>Type:</strong> {selectedCard.type}
-              </Typography>
-              <Typography>
-                <strong>Rarity:</strong> {selectedCard.rarity}
-              </Typography>
-              <Typography>
-                <strong>Set Name:</strong> {selectedCard.setName}
-              </Typography>
-              <Typography>
-                <strong>Price:</strong> ${selectedCard.price}
-              </Typography>
-              {selectedCard.scryfallUrl && (
-                <Typography>
-                  <strong>More Info:</strong>{' '}
-                  <a href={selectedCard.scryfallUrl} target="_blank" rel="noopener noreferrer">
-                    View on Scryfall
-                  </a>
-                </Typography>
-              )}
-            </>
-          )}
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => setDrawerOpen(false)}
-            sx={{ mt: 2 }}
-          >
-            Close
-          </Button>
-        </Box>
-      </Drawer>
     </Box>
   );
-};
-
-export default CardDataGrid;
+}
