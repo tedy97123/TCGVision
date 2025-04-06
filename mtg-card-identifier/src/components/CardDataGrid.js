@@ -51,8 +51,7 @@ const columns = [
     headerName: 'P/T',
     flex: 0.7,
     minWidth: 80,
-    // For rows that have power/toughness, display them as "4/4"
-  },
+   },
   {
     field: 'rarity',
     headerName: 'Rarity',

@@ -161,7 +161,6 @@ if (!isMainThread) {
   const util = require('util');
   const execPromise = util.promisify(exec);
 
-  // Example of a short list of known set codes (use a full list in production).
   const validSetCodes = [
     'LEA','LEB','2ED','3ED','ARN','ATQ','4ED','ICE','CHR','HML','ALL','MIR','VIS',
     '5ED','POR','WTH','TMP','STH','EXO','P02','UGL','USG','ULG','6ED','PTK','S99',
