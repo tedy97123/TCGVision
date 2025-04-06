@@ -8,8 +8,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Grid,
   Grid2,
+  Grid22,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -111,15 +111,15 @@ const CardInfo = ({ card }) => {
               <Typography>Legalities</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid container spacing={1}>
+              <Grid2 container spacing={1}>
                 {Object.entries(legalities).map(([format, status]) => (
-                  <Grid item xs={6} md={4} key={format}>
+                  <Grid2 item xs={6} md={4} key={format}>
                     <Typography>
                       <strong>{format}:</strong> {status}
                     </Typography>
-                  </Grid>
+                  </Grid2>
                 ))}
-              </Grid>
+              </Grid2>
             </AccordionDetails>
           </Accordion>
         )}
@@ -131,16 +131,16 @@ const CardInfo = ({ card }) => {
               <Typography>Prices</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid2 container spacing={1}>
+              <Grid22 container spacing={1}>
                 {Object.entries(prices).map(([priceType, value]) => (
-                  <Grid2 item xs={6} md={4} key={priceType}>
+                  <Grid22 item xs={6} md={4} key={priceType}>
                     <Typography>
                       <strong>{priceType}:</strong>{' '}
                       {value !== null && value !== '' ? value : '—'}
                     </Typography>
-                  </Grid2>
+                  </Grid22>
                 ))}
-              </Grid2>
+              </Grid22>
             </AccordionDetails>
           </Accordion>
         )}
